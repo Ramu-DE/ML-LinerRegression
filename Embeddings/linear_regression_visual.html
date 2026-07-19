@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Regression Explained</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .section {
+            margin: 40px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+        .formula {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-size: 1.3em;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+        .formula-large {
+            font-size: 1.8em;
+            color: #667eea;
+            font-weight: bold;
+        }
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .explanation {
+            background: #e8eaf6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 200px;
+            margin: 0 10px;
+        }
+        .stats {
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 Linear Regression Complete Guide</h1>
+
+        <div class="section">
+            <h2>What is Linear Regression?</h2>
+            <div class="explanation">
+                Linear regression finds the <strong>best-fit straight line</strong> through data points to predict outcomes.
+                <br><br>
+                <strong>Real-world examples:</strong>
+                <ul style="margin-left: 30px; margin-top: 10px;">
+                    <li>Predict house prices based on size</li>
+                    <li>Estimate salary based on years of experience</li>
+                    <li>Forecast sales based on advertising spend</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📐 The Linear Equation</h2>
+            <div class="formula formula-large">
+                y = mx + b
+            </div>
+            <div class="explanation">
+                <strong>Where:</strong><br>
+                <span class="highlight">y</span> = predicted value (dependent variable)<br>
+                <span class="highlight">x</span> = input value (independent variable)<br>
+                <span class="highlight">m</span> = slope (how steep the line is)<br>
+                <span class="highlight">b</span> = y-intercept (where line crosses y-axis)
+            </div>
+
+            <div class="formula">
+                Alternative notation: ŷ = β₀ + β₁x
+            </div>
+            <div class="explanation">
+                <span class="highlight">ŷ</span> (y-hat) = predicted value<br>
+                <span class="highlight">β₀</span> (beta-0) = intercept<br>
+                <span class="highlight">β₁</span> (beta-1) = slope coefficient
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Interactive Visualization</h2>
+            <canvas id="canvas1" width="800" height="500"></canvas>
+            <div class="controls">
+                <label>Slope (m): <input type="range" id="slope" min="-3" max="3" step="0.1" value="1.5"></label>
+                <span id="slopeVal">1.5</span>
+                <br><br>
+                <label>Intercept (b): <input type="range" id="intercept" min="-50" max="50" step="1" value="10"></label>
+                <span id="interceptVal">10</span>
+                <br><br>
+                <button onclick="fitLine()">🎯 Find Best Fit Line</button>
+                <button onclick="resetData()">↻ Reset</button>
+            </div>
+            <div class="stats" id="stats"></div>
+        </div>
+
+        <div class="section">
+            <h2>🧮 Key Formulas</h2>
+            
+            <div class="card" style="margin: 20px 0;">
+                <h3>1. Slope (m)</h3>
+                <div class="formula">
+                    m = Σ[(xᵢ - x̄)(yᵢ - ȳ)] / Σ[(xᵢ - x̄)²]
+                </div>
+                <div class="explanation">
+                    Or using covariance: <strong>m = Cov(x,y) / Var(x)</strong>
+                </div>
+            </div>
+
+            <div class="card" style="margin: 20px 0;">
+                <h3>2. Intercept (b)</h3>
+                <div class="formula">
+                    b = ȳ - m·x̄
+                </div>
+                <div class="explanation">
+                    Where x̄ and ȳ are the means of x and y
+                </div>
+            </div>
+
+            <div class="card" style="margin: 20px 0;">
+                <h3>3. Mean Squared Error (MSE)</h3>
+                <div class="formula">
+                    MSE = (1/n) Σ(yᵢ - ŷᵢ)²
+                </div>
+                <div class="explanation">
+                    Measures average squared difference between actual and predicted values
+                </div>
+            </div>
+
+            <div class="card" style="margin: 20px 0;">
+                <h3>4. R² Score (Coefficient of Determination)</h3>
+                <div class="formula">
+                    R² = 1 - (SS_res / SS_tot)
+                </div>
+                <div class="explanation">
+                    <strong>R² = 1</strong> → Perfect fit<br>
+                    <strong>R² = 0</strong> → No better than mean<br>
+                    Range: 0 to 1 (higher is better)
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Residuals Visualization</h2>
+            <canvas id="canvas2" width="800" height="400"></canvas>
+            <div class="explanation">
+                <strong>Residuals</strong> = Actual value - Predicted value<br>
+                Red lines show the error for each point. We minimize the sum of squared residuals!
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Step-by-Step Process</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Step 1: Collect Data</h3>
+                    <p>Gather (x, y) pairs of observations</p>
+                </div>
+                <div class="card">
+                    <h3>Step 2: Calculate Means</h3>
+                    <p>Find x̄ (mean of x) and ȳ (mean of y)</p>
+                </div>
+                <div class="card">
+                    <h3>Step 3: Calculate Slope</h3>
+                    <p>Use the slope formula with covariance</p>
+                </div>
+                <div class="card">
+                    <h3>Step 4: Calculate Intercept</h3>
+                    <p>Use b = ȳ - m·x̄</p>
+                </div>
+                <div class="card">
+                    <h3>Step 5: Make Predictions</h3>
+                    <p>Use ŷ = mx + b for new values</p>
+                </div>
+                <div class="card">
+                    <h3>Step 6: Evaluate</h3>
+                    <p>Calculate MSE and R² to assess fit</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas1 = document.getElementById('canvas1');
+        const ctx1 = canvas1.getContext('2d');
+        const canvas2 = document.getElementById('canvas2');
+        const ctx2 = canvas2.getContext('2d');
+
+        // Sample data points
+        let dataPoints = [
+            {x: 1, y: 15}, {x: 2, y: 25}, {x: 3, y: 30},
+            {x: 4, y: 38}, {x: 5, y: 45}, {x: 6, y: 55},
+            {x: 7, y: 62}, {x: 8, y: 70}, {x: 9, y: 75}
+        ];
+
+        let m = 1.5, b = 10;
+
+        function drawAxes(ctx, width, height) {
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(50, height - 50);
+            ctx.lineTo(width - 50, height - 50);
+            ctx.moveTo(50, height - 50);
+            ctx.lineTo(50, 50);
+            ctx.stroke();
+        }
+
+        function scalePoint(x, y, canvas) {
+            const padding = 50;
+            const maxX = 10, maxY = 100;
+            const scaleX = (canvas.width - 2 * padding) / maxX;
+            const scaleY = (canvas.height - 2 * padding) / maxY;
+            return {
+                x: padding + x * scaleX,
+                y: canvas.height - padding - y * scaleY
+            };
+        }
+
+        function drawPoints() {
+            ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+            drawAxes(ctx1, canvas1.width, canvas1.height);
+
+            // Draw points
+            dataPoints.forEach(p => {
+                const scaled = scalePoint(p.x, p.y, canvas1);
+                ctx1.fillStyle = '#e74c3c';
+                ctx1.beginPath();
+                ctx1.arc(scaled.x, scaled.y, 6, 0, Math.PI * 2);
+                ctx1.fill();
+            });
+
+            // Draw line
+            ctx1.strokeStyle = '#3498db';
+            ctx1.lineWidth = 3;
+            ctx1.beginPath();
+            const p1 = scalePoint(0, b, canvas1);
+            const p2 = scalePoint(10, m * 10 + b, canvas1);
+            ctx1.moveTo(p1.x, p1.y);
+            ctx1.lineTo(p2.x, p2.y);
+            ctx1.stroke();
+
+            // Labels
+            ctx1.fillStyle = '#333';
+            ctx1.font = '16px Arial';
+            ctx1.fillText('y = ' + m.toFixed(2) + 'x + ' + b.toFixed(2), 100, 30);
+
+            updateStats();
+            drawResiduals();
+        }
+
+        function drawResiduals() {
+            ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+            drawAxes(ctx2, canvas2.width, canvas2.height);
+
+            dataPoints.forEach(p => {
+                const predicted = m * p.x + b;
+                const actual = scalePoint(p.x, p.y, canvas2);
+                const pred = scalePoint(p.x, predicted, canvas2);
+
+                // Draw residual line
+                ctx2.strokeStyle = '#e74c3c';
+                ctx2.lineWidth = 2;
+                ctx2.setLineDash([5, 5]);
+                ctx2.beginPath();
+                ctx2.moveTo(actual.x, actual.y);
+                ctx2.lineTo(pred.x, pred.y);
+                ctx2.stroke();
+                ctx2.setLineDash([]);
+
+                // Draw points
+                ctx2.fillStyle = '#e74c3c';
+                ctx2.beginPath();
+                ctx2.arc(actual.x, actual.y, 5, 0, Math.PI * 2);
+                ctx2.fill();
+
+                ctx2.fillStyle = '#3498db';
+                ctx2.beginPath();
+                ctx2.arc(pred.x, pred.y, 5, 0, Math.PI * 2);
+                ctx2.fill();
+            });
+
+            // Draw line
+            ctx2.strokeStyle = '#3498db';
+            ctx2.lineWidth = 3;
+            const p1 = scalePoint(0, b, canvas2);
+            const p2 = scalePoint(10, m * 10 + b, canvas2);
+            ctx2.beginPath();
+            ctx2.moveTo(p1.x, p1.y);
+            ctx2.lineTo(p2.x, p2.y);
+            ctx2.stroke();
+        }
+
+        function calculateMSE() {
+            let sum = 0;
+            dataPoints.forEach(p => {
+                const predicted = m * p.x + b;
+                sum += Math.pow(p.y - predicted, 2);
+            });
+            return sum / dataPoints.length;
+        }
+
+        function calculateR2() {
+            const yMean = dataPoints.reduce((sum, p) => sum + p.y, 0) / dataPoints.length;
+            let ssRes = 0, ssTot = 0;
+            dataPoints.forEach(p => {
+                const predicted = m * p.x + b;
+                ssRes += Math.pow(p.y - predicted, 2);
+                ssTot += Math.pow(p.y - yMean, 2);
+            });
+            return 1 - (ssRes / ssTot);
+        }
+
+        function updateStats() {
+            const mse = calculateMSE();
+            const r2 = calculateR2();
+            document.getElementById('stats').innerHTML = `
+                <strong>Model Statistics:</strong><br>
+                Slope (m): ${m.toFixed(4)}<br>
+                Intercept (b): ${b.toFixed(4)}<br>
+                Mean Squared Error (MSE): ${mse.toFixed(4)}<br>
+                R² Score: ${r2.toFixed(4)} (${(r2 * 100).toFixed(2)}% variance explained)
+            `;
+        }
+
+        function fitLine() {
+            // Calculate best fit using least squares
+            const n = dataPoints.length;
+            const sumX = dataPoints.reduce((sum, p) => sum + p.x, 0);
+            const sumY = dataPoints.reduce((sum, p) => sum + p.y, 0);
+            const sumXY = dataPoints.reduce((sum, p) => sum + p.x * p.y, 0);
+            const sumX2 = dataPoints.reduce((sum, p) => sum + p.x * p.x, 0);
+
+            m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            b = (sumY - m * sumX) / n;
+
+            document.getElementById('slope').value = m;
+            document.getElementById('intercept').value = b;
+            document.getElementById('slopeVal').textContent = m.toFixed(2);
+            document.getElementById('interceptVal').textContent = b.toFixed(2);
+
+            drawPoints();
+        }
+
+        function resetData() {
+            m = 1.5;
+            b = 10;
+            document.getElementById('slope').value = m;
+            document.getElementById('intercept').value = b;
+            document.getElementById('slopeVal').textContent = m;
+            document.getElementById('interceptVal').textContent = b;
+            drawPoints();
+        }
+
+        // Event listeners
+        document.getElementById('slope').addEventListener('input', (e) => {
+            m = parseFloat(e.target.value);
+            document.getElementById('slopeVal').textContent = m.toFixed(2);
+            drawPoints();
+        });
+
+        document.getElementById('intercept').addEventListener('input', (e) => {
+            b = parseFloat(e.target.value);
+            document.getElementById('interceptVal').textContent = b;
+            drawPoints();
+        });
+
+        // Initialize
+        drawPoints();
+    </script>
+</body>
+</html>
