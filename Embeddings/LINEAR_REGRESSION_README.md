@@ -59,7 +59,7 @@ SS_tot = Σ(yᵢ - ȳ)²   (total sum of squares)
 **Interpretation:**
 - R² = 1.0 → Perfect fit
 - R² = 0.0 → No better than predicting the mean
-- Range: 0 to 1 (higher is better)
+- Range: 0 to 1 on the training data for OLS with an intercept (higher is better); on new data it can be negative
 
 ## 🔍 Step-by-Step Process
 
@@ -113,16 +113,16 @@ Years | Salary ($k)
     ...
 
 Model trained successfully!
-Equation: y = 5.9394x + 34.5455
+Equation: y = 6.3636x + 32.0000
 
 Model Performance:
-R² Score: 0.9897 (98.97% variance explained)
-MSE: 6.8595
-RMSE: 2.6191
+R² Score: 0.9943 (99.43% variance explained)
+MSE: 1.9091
+RMSE: 1.3817
 
 Predictions:
-3 years experience → $52.36k predicted salary
-7 years experience → $76.12k predicted salary
+3 years experience → $51.09k predicted salary
+7 years experience → $76.55k predicted salary
 ```
 
 ## 🎨 Visualizations Generated
