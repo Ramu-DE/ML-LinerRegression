@@ -12,6 +12,18 @@ Each folder also holds the individual chapter videos (`L01-…mp4`, `E01-…mp4`
 
 [VIDEO_STRUCTURE.md](VIDEO_STRUCTURE.md) reviews how the Embeddings and Vector Search chapters are ordered.
 
+## AWS EKS Fundamentals (5 topic videos)
+
+One video per topic, following the `EKS/AWS_EKS_fundamentals/concepts/` folder order. See [eks/README.md](eks/README.md) for the full table.
+
+| Topic | Video | Guide |
+|---|---|---|
+| Exposing Applications | [EKS-Exposing-Applications.mp4](eks/exposing/EKS-Exposing-Applications.mp4) | [GUIDE.md](eks/exposing/GUIDE.md) |
+| Storage | [EKS-Storage.mp4](eks/storage/EKS-Storage.mp4) | [GUIDE.md](eks/storage/GUIDE.md) |
+| Compute | [EKS-Compute.mp4](eks/compute/EKS-Compute.mp4) | [GUIDE.md](eks/compute/GUIDE.md) |
+| Networking | [EKS-Networking.mp4](eks/networking/EKS-Networking.mp4) | [GUIDE.md](eks/networking/GUIDE.md) |
+| Workload Autoscaling | [EKS-Workload-Autoscaling.mp4](eks/workload-autoscaling/EKS-Workload-Autoscaling.mp4) | [GUIDE.md](eks/workload-autoscaling/GUIDE.md) |
+
 ## Linear Regression chapters
 
 | # | Chapter | Notebooks |
